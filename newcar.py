@@ -27,17 +27,23 @@ current_generation = 0  # Generation counter
 """
 The Car Class 
 
-Throughout this section, you will need to explore each function
-and provide extenive comments in the spaces denoted by the 
-triple quotes(block quotes) """ """.
-Your comments should describe each function and what it is doing, 
+Throughout this section, you will need to explore each function and provide
+extenive comments in the spaces denoted by the triple quotes (block quotes) 
+""" """. Your comments should describe each function and what it is doing, 
 why it is necessary and where it is being used in the rest of the program.
 
 """
 
 
 class Car:
-    """1. This Function:"""
+    """
+    1. This Function is part of the Car class constructor, and sets up each 
+    car with basic features, including loading the car sprite's image, and 
+    setting its size and rotation, starting position, center and radar 
+    values, and other variables including distace and time. It also creates
+    a Boolean called "self.alive", which is used later in the code to check 
+    if the car has crashed or not.
+    """
 
     def __init__(self):
         # Load Car Sprite and Rotate
@@ -65,16 +71,23 @@ class Car:
         self.distance = 0  # Distance Driven
         self.time = 0  # Time Passed
 
-    """ 2. This Function:
-    
+    """ 
+    2. This Function uses pygame in order to draw the car as a blit (sprite)
+    on screen. It also calls the draw_radar function for drawing the radars. 
+    This is used later in the run_simulation function in order to constantly
+    draw each car's updated position, rotation and radars.
     """
 
     def draw(self, screen):
         screen.blit(self.rotated_sprite, self.position)  # Draw Sprite
         self.draw_radar(screen)  # OPTIONAL FOR SENSORS
 
-    """ 3. This Function:
-    
+    """ 
+    3. This Function draws in all the green lines and circles that make up 
+    the radars of the car by looping through the values stored in self.radars.
+    It is called in the draw function (above), and is optional depending on
+    if the user wishes to see the radars or not. None of the functionality
+    of the radars is defined here.
     """
 
     def draw_radar(self, screen):
@@ -84,8 +97,12 @@ class Car:
             pygame.draw.line(screen, (0, 255, 0), self.center, position, 1)
             pygame.draw.circle(screen, (0, 255, 0), position, 5)
 
-    """ 4. This Function:
-    
+    """ 
+    4. This Function checks if the car has crashed, based on whether it has 
+    touched the border colour (defined as white on line 24). This function 
+    assumes the car as a recangle with four corners that are used as detection
+    points for crashing. If any corner touches the border colour, the car has 
+    crashed and self.alive is set to False.
     """
 
     def check_collision(self, game_map):
@@ -130,7 +147,14 @@ class Car:
         )
         self.radars.append([(x, y), dist])
 
-    """ 6. This Function:
+    """ 
+    6. This Function is crucial to the success of the program, and is called 
+    in the run_simulation function. It rotates and moves the car's sprite to
+    match its angle and speed, as well as incramenting self.distance and 
+    self.time in order for later fitness values to be calculated. The function
+    also updates new centre and corner points for the car's new position as 
+    well as checking for collisons, and other smaller speed and radar updates / 
+    checks. 
     
     """
 
@@ -192,8 +216,11 @@ class Car:
         for d in range(-90, 120, 45):
             self.check_radar(d, game_map)
 
-    """ 7. This Function:
-    
+    """ 
+    7. This Function calculates the distances from each radar to the border,
+    with each value divided by 30 and rounded to the nearest whole number.
+    This is used in the run_simulation function in order to help inform each
+    car's choices in direction and speed.
     """
 
     def get_data(self):
@@ -205,16 +232,22 @@ class Car:
 
         return return_values
 
-    """ 8. This Function:
-    
+    """ 
+    8. This Function is used in the run_simulation function to check if
+    each car is still alive. It returns self.alive, which is set to True
+    when each car is defined in __init__(self), and set to False in the
+    check_collision function when a car crashes.
     """
 
     def is_alive(self):
         # Basic Alive Function
         return self.alive
 
-    """ 9. This Function:
-    
+    """ 
+    9. This Function calculates each car's reward as its distance travelled 
+    divided by half of its size. This is likely done in order to normalise 
+    the reward values in terms of a car's size. This function is used in 
+    later calculations of each car's fitness score.
     """
 
     def get_reward(self):
@@ -222,8 +255,12 @@ class Car:
         # return self.distance / 50.0
         return self.distance / (CAR_SIZE_X / 2)
 
-    """ 10. This Function:
-    
+    """ 
+    10. This Function rotates the car sprite's image to match the angle it
+    is travelling in. This is so that the car's movement appears logical to
+    the user, rather than the car travelling backwards or sideways for example.
+    It is called in the update function to ensure each car's image rotation
+    is constantly updated.
     """
 
     def rotate_center(self, image, angle):
@@ -236,8 +273,26 @@ class Car:
         return rotated_image
 
 
-""" This Function:
+""" 
+This Function is one of the main code blocks used to run the simulation. One
+run-through of the code represents one generation in the simulation. It is 
+called in the final line of code, where it is set to run a maximum of 1000 
+times.
 
+1) First, it intialises everthing required for the simulation to run. This 
+includes the Pygame library and width and height of the screen. It then 
+creates neural networks for each car (or genome). Each car's fitness is then
+set to 0.
+
+2) The code enters a while True loop, which is the main portion of the 
+generation's game time that continues until either the user quits the progam,
+all of the cars have died, or around 20 second have passed. Each car uses its
+neural network with inputs from its radar sensors in order to determine its 
+actions (outputs). Each car can turn left or right, and speed up or slow down.
+The loop then checks if each car is still alive using car.is_alive(). If so, 
+the car's fitness and position values are updated. After this, the code renders
+the living cars and game map, as well as updating the displayed information 
+including the current generation and number of cars still alive.
 """
 
 
@@ -263,7 +318,7 @@ def run_simulation(genomes, config):
     clock = pygame.time.Clock()
     generation_font = pygame.font.SysFont("Arial", 30)
     alive_font = pygame.font.SysFont("Arial", 20)
-    game_map = pygame.image.load("map.png").convert()  # Convert Speeds Up A Lot
+    game_map = pygame.image.load("map4.png").convert()  # Convert Speeds Up A Lot
 
     global current_generation
     current_generation += 1
@@ -330,12 +385,29 @@ def run_simulation(genomes, config):
         clock.tick(60)  # 60 FPS
 
 
-""" 1. This Section:
-    
+""" 
+1. This Section is the main section of the program.
+
+The if __name__ == "__main__": ensures that it will only run when the
+script is run directly, as opposed to being imported through a module.
+
+First, it loads the config.txt file, which states various settings
+for the simulation to run including population size, activation function 
+and elitism values. 
+
+Then, it creates a NEAT population based on these values. Two 'reporters'
+are also added, which are used to collect information about the evolution 
+process (ie. generation number), and statistics (ie. best fitness value of
+the generation). 
+
+Finally, the section the runs the simulation, which calls the 
+run_simulation function a maximum of 1000 times, to ensure there is a 
+maximum of 1000 generations that are run.
+
 """
 if __name__ == "__main__":
     # Load Config
-    config_path = "./config.txt"
+    config_path = ".\config.txt"
     config = neat.config.Config(
         neat.DefaultGenome,
         neat.DefaultReproduction,
