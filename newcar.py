@@ -114,7 +114,11 @@ class Car:
                 self.alive = False
                 break
 
-    """ 5. This Function:
+    """ 
+    5. This Function is used to calculate the distances from each radar sensor
+    on a car to the nearest border (white). This is done through a while loop,
+    where the length increases until either a border is detected or a maximum 
+    of 300 is reached. It is used in the update function.
     
     """
 
